@@ -1,0 +1,27 @@
+{
+  "name": "sodocs",
+  "version": "0.0.1",
+  "description": "sojajs documentation server",
+  "main": "lib/index.js",
+  "dependencies": {
+    "github-markdown-css": "^2.0.11",
+    "glue": "2.x.x",
+    "hapi": "9.x.x",
+    "highlight.js": "^8.8.0",
+    "hoek": "2.x.x",
+    "inert": "3.x.x",
+    "jade": "^1.11.0",
+    "marked": "^0.3.5",
+    "vision": "3.x.x"
+  },
+  "scripts": {
+    "test": "test"
+  },
+  "keywords": [
+    "sofajs",
+    "documentation",
+    "server"
+  ],
+  "author": "Jon Swenson",
+  "license": "BSD-3-Clause"
+}
