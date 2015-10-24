@@ -1,0 +1,13 @@
+
+.record
+{
+    position:relative;
+    display:block; 
+}
+
+.record .functionSignature
+{
+    font-size:20px;
+    font-weight:bold;
+}
+

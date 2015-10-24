@@ -3,7 +3,8 @@
  * sofa.css
  */
 
-.functionName {
+.functionName 
+{
     position: relative;
     margin-top: 1em;
     font-weight: bold;
@@ -11,9 +12,73 @@
     line-height: 1.4;
 }
 
-.functionMenuLink {
+.functionMenuLink 
+{
     position: relative;
     font-weight: bold;
+    font-size: 1.0em;
+    line-height: 1.4;
+    display: block;
+}
+
+footer 
+{
+    position: relative;
+    width:100%;
+    /*font-weight: bold;*/
+    font-size: 1.0em;
+    line-height: 1.4;
+}
+
+.headerBasic 
+{
+    position: relative;
+    width:100%;
+    font-weight: bold;
+    font-size: 1.0em;
+    line-height: 1.4;
+    margin-right: 210px;
+    display: block;
+    height:33px;
+}
+
+#wrap 
+{
+    position: relative;
+    height:100%;
+    margin-right: 210px;
+}
+
+.sidebar 
+{
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+    width: 210px;
+    /*font-weight: bold;*/
+    font-size: 1.0em;
+    line-height: 1.4;
+    margin-right: -210px;
+}
+.sidebarh1 
+{
+    position:relative;
+    font-size:2.25em;
+    font-weight:bold;
+    display:block;
+    margin: 0 0 0 0;
+    text-align:center;
+}
+
+.content 
+{
+    position: relative;
+    top: 0px;
+    bottom: 0px;
+    right: 0px;
+    left: 0px;
+    /*font-weight: bold;*/
     font-size: 1.0em;
     line-height: 1.4;
     display: block;
