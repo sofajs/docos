@@ -20,26 +20,6 @@ $(document).ready(function () {
 
 internals.loadmenu = function (docs) {
 
-    var navtabs = '<ul class="nav nav-tabs">' +
-        '<li class="active"><a href="#">Home</a></li>' +
-        '<li class="dropdown">' +
-        '<a class="dropdown-toggle" data-toggle="dropdown" href="#">Menu 1' +
-        '<span class="caret"></span></a>' +
-        '<ul class="dropdown-menu">' +
-        '<li><a href="#">Submenu 1-1</a></li>' +
-        '<li><a href="#">Submenu 1-2</a></li>' +
-            '<ul class="dropdown-menu">' +
-                '<li><a href="#">Sub Submenu 1-1</a></li>' +
-                '<li><a href="#">Sub Submenu 1-2</a></li>' +
-            '</ul>' +
-        '<li><a href="#">Submenu 1-3</a></li> ' +
-        '</ul>' +
-        '</li>' +
-        '<li><a href="#">Menu 2</a></li>' +
-        '<li><a href="#">Menu 3</a></li>' +
-        '</ul>';
-
-
     // process requests
 
     var requests  = Object.keys(docs.requests);
@@ -50,7 +30,7 @@ internals.loadmenu = function (docs) {
 
         requestOptions += '<li><a href="#">' + requests[i].toUpperCase() + '</a>' +
             '<ul>' +
-            internals.loadGroup(docs.requests[requests[i]]) +
+            internals.loadGroup(docs.requests[requests[i]], requests[i], 'requests') +
             '</ul>' +
             '</li>';
     };
@@ -69,17 +49,31 @@ internals.loadmenu = function (docs) {
         // toolGroupFunctionsList = internals.loadGroup(docs.tools[tools[i]], tools[i]);
         toolsOptions += '<li><a href="#">' + tools[i].toUpperCase() + '</a>'+
             '<ul>' +
-            internals.loadGroup(docs.tools[tools[i]]) +
+            internals.loadGroup(docs.tools[tools[i]], tools[i], 'tools') +
             '</ul>' +
             '</li>';
     };
 
     var toolsOptgroup = '<ul class="dropdown-menu">' + toolsOptions + '</ul>';
 
-    // get tool group functions 
 
+    // process promises
       
+    var promises  = Object.keys(docs.promises);
+    var promisesOptions = '';
 
+    for (var i = 0; i < promises.length; ++i) {  
+
+        // console.log('watch ' + internals.loadToolGroup(docs.tools[tools[i]]));
+        // toolGroupFunctionsList = internals.loadGroup(docs.tools[tools[i]], tools[i]);
+        promisesOptions += '<li><a href="#">' + promises[i].toUpperCase() + '</a>'+
+            '<ul>' +
+            internals.loadGroup(docs.promises[promises[i]], promises[i], 'promises') +
+            '</ul>' +
+            '</li>';
+    };
+
+    var promisesOptGroup = '<ul class="dropdown-menu">' + promisesOptions + '</ul>';
 
     var dropDownMenu = '<ul class="nav nav-tabs">' +
             '<li class="dropdown">' +
@@ -90,34 +84,14 @@ internals.loadmenu = function (docs) {
             '<a class="dropdown-toggle" data-toggle="dropdown" href="#">Tools<span class="caret"></span></a>' +
                 toolsOptgroup +
         '</li>'+
+        '<li class="dropdown">' +
+            '<a class="dropdown-toggle" data-toggle="dropdown" href="#">Promises<span class="caret"></span></a>' +
+                promisesOptGroup +
+        '</li>'+
         '</ul>';
 
     $( ".navigatePlugins" )
         .html(dropDownMenu);
-
-    // console.log('watch' + dropDownMenu);
-    // $( "body footer" ).append(dropDownMenu);
-    var navtabs = '<ul class="nav nav-tabs">' +
-        '<li class="active"><a href="#">Home</a></li>' +
-        '<li class="dropdown">' +
-        '<a class="dropdown-toggle" data-toggle="dropdown" href="#">Menu 1' +
-        '<span class="caret"></span></a>' +
-        '<ul class="dropdown-menu">' +
-        '<li><a href="#">Submenu 1-1</a></li>' +
-        '<li><a href="#">Submenu 1-2</a></li>' +
-            '<ul class="dropdown-menu">' +
-                '<li><a href="#">Sub Submenu 1-1</a></li>' +
-                '<li><a href="#">Sub Submenu 1-2</a></li>' +
-            '</ul>' +
-        '<li><a href="#">Submenu 1-3</a></li> ' +
-        '</ul>' +
-        '</li>' +
-        '<li><a href="#">Menu 2</a></li>' +
-        '<li><a href="#">Menu 3</a></li>' +
-        '</ul>';
-
-    // $( "body footer" ).append(navtabs);
-    // $( "body footer" ).append(navtabs);
 };
 
 internals.load = function (docs) {
@@ -225,21 +199,20 @@ internals.load = function (docs) {
 
 };
 
-internals.loadGroup = function (toolgroup) {
+internals.loadGroup = function (toolgroup, groupName, pluginType) {
 
     var toolGroupFunctions  = Object.keys(toolgroup.methods);
     var functionListHTML = '';
 
-    // console.log('watch: ' + JSON.stringify(toolgroup));
-    // console.log('watch: ' + functionName);
-    // functionListHTML += '<li><a href="#">' + toolgroup.methods[functionName].name + '</a></li>';
+    // load functions with in toolGroup
 
-    // get all functions with in toolGroup
     for (var i = 0; i < toolGroupFunctions.length; ++i) {  
 
-        // console.log('watch: ' + JSON.stringify(toolgroup.methods));
-        // console.log('watch: ' + toolGroupFunctions[i]);
-        functionListHTML += '<li><a href="#">' + toolgroup.methods[toolGroupFunctions[i]].name + '</a></li>';
+        functionListHTML += '<li><a href="#' +  
+            pluginType + '-' + groupName + '-' + toolgroup.methods[toolGroupFunctions[i]].name +
+            '">' + 
+            toolgroup.methods[toolGroupFunctions[i]].name + 
+            '</a></li>';
     };
 
     return functionListHTML;
