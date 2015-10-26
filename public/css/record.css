@@ -5,9 +5,9 @@
     display:block; 
 }
 
-.record .functionSignature
+.record .functionSignature a
 {
-    font-size:20px;
+    font-size: 1.5em;
     font-weight:bold;
 }
 

@@ -1,4 +1,3 @@
-
 var internals = {};
 
 $(document).ready(function () {
@@ -9,41 +8,66 @@ $(document).ready(function () {
 
         // var sofaDocs = JSON.parse(data);
 
-        internals.loadmenu(data.docs, function (err, requestsDropDownBox) {});
+        internals.load(data.docs, function (err, requestsDropDownBox) {});
 
             $( "body" )
                 .append( "Data: " + JSON.stringify(data.docs.requests.user.methods.test.signature) );
     }, "json" );
-
-    console.log('document is ready');
 });
 
-internals.loadmenu = function (docs) {
+internals.load = function (docs) {
 
     // process requests
 
     var requests  = Object.keys(docs.requests);
     var requestOptions = '';
 
-    // '<li class="active"><a href="#">Home</a></li>' +
+    var requestsDocumentation = [];
+
     for (var i = 0; i < requests.length; ++i) {  
+
+        // load request group's documentation
+
+        var docRecordsArray = internals.loadGroupDocumentation(docs.requests[requests[i]], requests[i], 'requests');
+
+        var group = {
+            name:  requests[i],
+            records: docRecordsArray
+        };
+
+        requestsDocumentation.push(group);
+
+
+        // load request group's navigation menu 
 
         requestOptions += '<li><a href="#">' + requests[i].toUpperCase() + '</a>' +
             '<ul>' +
             internals.loadGroup(docs.requests[requests[i]], requests[i], 'requests') +
             '</ul>' +
             '</li>';
+
     };
 
     var requestsOptgroup = '<ul class="dropdown-menu">' + requestOptions + '</ul>';
-
 
     // process tools
 
     var tools  = Object.keys(docs.tools);
     var toolsOptions = '';
     var toolGroupFunctionsList = '';
+    var toolsDocumentation = [];
     for (var i = 0; i < tools.length; ++i) {  
+
+        // load tools group's documentation
+
+        var docRecordsArray = internals.loadGroupDocumentation(docs.tools[tools[i]], tools[i], 'tools');
+
+        var group = {
+            name:  tools[i],
+            records: docRecordsArray
+        };
+
+        toolsDocumentation.push(group);
 
         // console.log('watch ' + internals.loadToolGroup(docs.tools[tools[i]]));
         // toolGroupFunctionsList = internals.loadGroup(docs.tools[tools[i]], tools[i]);
@@ -61,8 +85,22 @@ internals.loadmenu = function (docs) {
       
     var promises  = Object.keys(docs.promises);
     var promisesOptions = '';
+    var promisesDocumentation = [];
 
     for (var i = 0; i < promises.length; ++i) {  
+
+        // load promises'  documentation
+
+        console.log('loading promise!! ');
+        var docRecordsArray = internals.loadGroupDocumentation(docs.promises[promises[i]], promises[i], 'promises');
+
+        var group = {
+            name:  promises[i],
+            records: docRecordsArray
+        };
+
+        promisesDocumentation.push(group);
+
 
         // console.log('watch ' + internals.loadToolGroup(docs.tools[tools[i]]));
         // toolGroupFunctionsList = internals.loadGroup(docs.tools[tools[i]], tools[i]);
@@ -74,6 +112,14 @@ internals.loadmenu = function (docs) {
     };
 
     var promisesOptGroup = '<ul class="dropdown-menu">' + promisesOptions + '</ul>';
+
+    // ** make documentation object
+
+    internals.documentation = { 
+        requests: requestsDocumentation,
+        tools: toolsDocumentation,
+        promises: promisesDocumentation
+    }
 
     var dropDownMenu = '<ul class="nav nav-tabs">' +
             '<li class="dropdown">' +
@@ -90,114 +136,110 @@ internals.loadmenu = function (docs) {
         '</li>'+
         '</ul>';
 
-    $( ".navigatePlugins" )
-        .html(dropDownMenu);
+    // Insert Sidebar Navigation HTML
+
+    $( ".sidebar" ).append(dropDownMenu);
+
+    // Insert Documentation
+
+    async.waterfall([function (next) {
+    
+        if (internals.documentation.requests.length !== 0) {
+
+            for (var i = 0; i < internals.documentation.requests.length; ++i) {
+
+                // console.log('watch: '+ i + ' ' + JSON.stringify(internals.documentation.requests[i]));
+                for (var i2 = 0; i2 < internals.documentation.requests[i].records.length; ++i2) {
+
+                    // process request groups functions
+                    // console.log('watch water: ' + internals.documentation.requests[i].records[i2]);
+                    // console.log('watch: ' + internals.documentation.requests[i2].docs);
+
+                    var htmlPartial = window.recordTemplate({ record: internals.documentation.requests[i].records[i2] }); 
+
+                    $( "#wrap" ).append(htmlPartial);
+
+                    if (i2 === internals.documentation.requests[i].records.length - 1) {
+                        next();
+                    }
+                }
+            }
+
+        } else {
+            next();
+        }
+
+    }, function (next) {
+    
+        console.log('waterfall tools starts');
+
+        internals.next = next;
+
+        if (internals.documentation.tools.length !== 0) {
+            for (var i = 0; i < internals.documentation.tools.length; ++i) {
+
+                // console.log('watch: '+ i + ' ' + JSON.stringify(internals.documentation.requests[i]));
+                for (var i2 = 0; i2 < internals.documentation.tools[i].records.length; ++i2) {
+
+                    // process request groups functions
+                    // console.log('watch water: ' + internals.documentation.tools[i].records[i2]);
+                    // console.log('watch: ' + internals.documentation.requests[i2].docs);
+
+                    var htmlPartial = window.recordTemplate({ record: internals.documentation.tools[i].records[i2] }); 
+
+                    $( "#wrap" ).append(htmlPartial);
+
+                    console.log('tools group ' + i);
+                    if (i === internals.documentation.tools.length - 1) {
+                        console.log('exit tools' + i);
+                        internals.next();
+                    }
+                }
+            }
+        } else {
+            next();
+        }
+    }, function (next) {
+    
+        if (internals.documentation.promises.length !== 0) {
+
+            for (var i = 0; i < internals.documentation.promises.length; ++i) {
+
+                // console.log('watch: '+ i + ' ' + JSON.stringify(internals.documentation.requests[i]));
+
+                console.log('--');
+                var exit = internals.documentation.promises[i].records.length - 1;
+
+                for (var i2 = 0; i2 < internals.documentation.promises[i].records.length; ++i2) {
+
+                    // process request groups functions
+                    // console.log('watch water: ' + internals.documentation.tools[i].records[i2]);
+                    // console.log('watch: ' + internals.documentation.requests[i2].docs);
+
+                    var htmlPartial = window.recordTemplate({ record: internals.documentation.promises[i].records[i2] }); 
+
+                    $( "#wrap" ).append(htmlPartial);
+
+                    console.log('promises.length ' + internals.documentation.promises[i].records.length);
+                    console.log('promises.length ' + i2);
+                    console.log('exit ' + exit);
+                    if (i2 === exit) {
+                        console.log('got it');
+                        next();
+                    }
+                }
+            }
+        } else {
+            next();
+        }
+
+    }], function (err) {
+        
+        console.log('waterfall done');
+    });
+    
 };
 
-internals.load = function (docs) {
-
-    // load    
-
-    // console.log('load ' + JSON.stringify(docs));
-
-    // <select>
-    //     <optgroup label="Swedish Cars">
-    //     <option value="volvo">Volvo</option>
-    //     <option value="saab">Saab</option>
-    //     </optgroup>
-    //     <optgroup label="German Cars">
-    //     <option value="mercedes">Mercedes</option>
-    //     <option value="audi">Audi</option>
-    //     </optgroup>
-    //     </select>
-
-
-    // process requests
-
-    var requests  = Object.keys(docs.requests);
-    var requestOptions = '';
-
-    for (var i = 0; i < requests.length; ++i) {  
-
-        requestOptions += '<option value="'+ requests[i] + '">' + requests[i].toUpperCase() + '</option>';
-    };
-
-    var requestsOptgroup = '<optgroup label="requests">' + requestOptions + '</optgroup>';
-
-
-    // process foundation 
-
-    var foundation  = Object.keys(docs.foundation);
-    var foundationOptions = '';
-
-    for (var i = 0; i < foundation.length; ++i) {  
-
-        foundationOptions += '<option value="'+ foundation[i] + '">' + foundation[i].toUpperCase() + '</option>';
-    };
-
-    var foundationOptgroup = '<optgroup label="foundation">' + foundationOptions + '</optgroup>';
-
-
-    // process tools
-
-    var tools  = Object.keys(docs.tools);
-    var toolsOptions = '';
-
-    for (var i = 0; i < tools.length; ++i) {  
-
-        toolsOptions += '<option value="'+ tools[i] + '">' + tools[i].toUpperCase() + '</option>';
-    };
-
-    var toolsOptgroup = '<optgroup label="tools">' + toolsOptions + '</optgroup>';
-
-
-    // process promises 
-
-    var promises  = Object.keys(docs.promises);
-    var promisesOptions = '';
-
-    for (var i = 0; i < promises.length; ++i) {  
-
-        promisesOptions += '<option value="'+ promises[i] + '">' + promises[i].toUpperCase() + '</option>';
-    };
-
-    var promisesOptgroup = '<optgroup label="promises">' + promisesOptions + '</optgroup>';
-
-
-    // load drop down box
-    
-    var dropDownMenu = '<select>' + 
-        requestsOptgroup + 
-        toolsOptgroup +
-        promisesOptgroup +
-        foundationOptgroup +
-        '</select>'; 
-
-    $( ".navigatePlugins" )
-        .html(dropDownMenu);
-
-    var sampleTemplate = window.sampleTemplate({ record: docs.foundation.core.methods.test });
-    var template = window.recordTemplate({ record: docs.requests.user.methods.test });
-    //  template(data.docs.requests.user.methods.test); 
-    console.log(template);
-    $( "body #wrap" ).append(template);
-    $( "body #wrap" ).append(sampleTemplate);
-
-    var boom = '<menu type="context" id="mymenu">' +
-               '<menuitem label="Refresh"> </menuitem> ' +
-               '     <menu label="Share on...">' +
-               '        <menuitem label="Twitter" icon="ico_twitter.png" </menuitem>' +
-               '        <menuitem label="Facebook" icon="ico_facebook.png" </menuitem> '+
-               '    </menu>'+
-               '<menuitem label="Email This Page"> </menuitem> '+
-               '</menu>';
-    
-    var boom2 = '<menu>'+
-                    '<menuitem>one</menuitem>'+
-                '</menu>'; 
-
-
-};
 
 internals.loadGroup = function (toolgroup, groupName, pluginType) {
 
@@ -216,4 +258,27 @@ internals.loadGroup = function (toolgroup, groupName, pluginType) {
     };
 
     return functionListHTML;
+};
+
+internals.loadGroupDocumentation = function (group, groupName, pluginType) {
+
+    var groupFunctions  = Object.keys(group.methods);
+    var groupDocumentation = [];
+
+    // load functions with in toolGroup
+
+    for (var i = 0; i < groupFunctions.length; ++i) {  
+
+        var record = { 
+            pluginType: pluginType,
+            groupName: groupName,
+            name: group.methods[groupFunctions[i]].name, 
+            signature: group.methods[groupFunctions[i]].signature,
+            comment: group.methods[groupFunctions[i]].comment
+        };
+
+        groupDocumentation.push(record); 
+    };
+
+    return groupDocumentation;
 };
