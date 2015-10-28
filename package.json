@@ -1,5 +1,5 @@
 {
-  "name": "sodocs",
+  "name": "docos",
   "version": "0.0.1",
   "description": "sojajs documentation server",
   "main": "lib/index.js",
@@ -17,9 +17,16 @@
   "scripts": {
     "test": "test"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sofajs/docos.git"
+  },
   "keywords": [
+    "docos",
     "sofajs",
+    "couchdb",
     "documentation",
+    "docs",
     "server"
   ],
   "author": "Jon Swenson",
