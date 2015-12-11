@@ -1,0 +1,19 @@
+extends layout
+
+block head 
+    script(src='/public/thirdparty/react/react.js')
+    script(src='/public/thirdparty/react/react-dom.js')
+
+block title
+    title sofajs foundation documentation
+
+block content
+    p(class="headerBasic")  sofajs foundation documentation  
+
+    div(id="foundationContainer")
+        div(id="wrap")
+
+        div(class="sidebarTitle") foundation
+        div(class="sidebar")
+
+    script(src='/public/build/js/foundation.js')

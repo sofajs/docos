@@ -4,6 +4,8 @@
   "description": "sojajs documentation server",
   "main": "lib/index.js",
   "dependencies": {
+    "babel-preset-es2015": "^6.3.13",
+    "babel-preset-react": "^6.3.13",
     "github-markdown-css": "^2.0.11",
     "glue": "2.x.x",
     "hapi": "9.x.x",

@@ -12,10 +12,16 @@ html(lang='en')
         script(src='/public/thirdparty/async/lib/async.js')
         script(src='/public/js/runtime.js')
         script(src='/public/js/templates.js')
-        script(src='/public/js/newsofajs.js')
+        block head
+
         block title
 
     body(class='markdown-body')
+        div(class="navbar")
+            a(href='/foundation') foundation
+            a(href='/documentation') documentation 
+            a(href='/') home 
+
         block content
     
         include footer
