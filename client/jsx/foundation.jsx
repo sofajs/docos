@@ -1,7 +1,14 @@
 var internals = {};
 internals.foundation = {};
 
+
 var styles = {
+    contentsFunctionLink: {    
+        color: '#4078c0',
+        textDecoration: 'none',
+        fontSize: '1.0em',
+        fontWeight: 'bold' 
+    },
     functionLink: {    
         color: '#4078c0',
         textDecoration: 'none',
@@ -16,6 +23,82 @@ var styles = {
     }
 };
 
+
+var ContentsFunction = React.createClass({
+
+    render: function () {
+
+        return (<div name="record">
+            <div name="contentsFunctionSignature">
+                <a name="foundationContentsFunction" style={styles.contentsFunctionLink} href={"#foundation-" + this.props.name}>{this.props.name}{this.props.signature}</a>
+                </div>
+                </div>);
+
+    }
+});
+
+var ContentsModule = React.createClass({
+
+    render: function () {
+    
+        // keys
+
+        var methods = [];
+        var keys = Object.keys(this.props.module.methods);
+
+        if (keys.length > 0) {
+        
+            keys.forEach(method => {
+               
+                methods.push(<ContentsFunction 
+                                    name={this.props.module.methods[method].name}
+                                    signature={this.props.module.methods[method].signature} 
+                                    key={this.props.module.methods[method].name} 
+                                    
+                             />);
+            });
+
+            return (
+                <div>
+                    <h3>foundation.{this.props.moduleName}</h3>
+                    {methods}
+                </div>
+            );
+        }
+
+        return (<div>Nothing to load.</div>);
+    }
+});
+
+
+var TableOfContents = React.createClass({
+
+    render: function() {
+    
+        // process each module in foundation group.
+
+        var modules = [];
+        var keys = Object.keys(this.props.modules);
+
+        if (keys.length > 0) {
+        
+            keys.forEach(key => {
+
+                modules.push(<ContentsModule 
+                                    module={this.props.modules[key]} 
+                                    moduleName={key} 
+                                    key={key}
+                                />);
+            });
+
+            return (<div>{modules}</div>);
+        }
+
+        return (<div>Contents Nothing to load.</div>);
+    }
+});
+
+
 var ModuleFunction = React.createClass({
 
     rawMarkup: function () {
@@ -27,7 +110,7 @@ var ModuleFunction = React.createClass({
 
         return (<div name="record">
             <div name="functionSignature">
-                <a name="requests-user-test" style={styles.functionLink} href="#foundation--test">{this.props.name}{this.props.signature}</a>
+                <a name={"foundation-" + this.props.name} style={styles.functionLink} href={"#foundation-" + this.props.name}>{this.props.name}{this.props.signature}</a>
                 </div>
                 <div name="comment markdown-body">
                     <span dangerouslySetInnerHTML={this.rawMarkup()} />
@@ -36,6 +119,7 @@ var ModuleFunction = React.createClass({
 
     }
 });
+
 var FoundationModule = React.createClass({
 
     render: function () {
@@ -60,7 +144,7 @@ var FoundationModule = React.createClass({
 
             return (
                 <div>
-                    <h2>foundation.{this.props.moduleName}</h2>
+                    <h5>foundation.{this.props.moduleName}</h5>
                     {methods}
                 </div>
             );
@@ -70,8 +154,9 @@ var FoundationModule = React.createClass({
     }
 });
 
-var FoundationModulesList = React.createClass({
 
+
+var FoundationModulesList = React.createClass({
 
     render: function() {
     
@@ -137,6 +222,9 @@ var FoundationView = React.createClass({
 
     render: function() {         
         return (<div>
+            <TableOfContents
+                modules={this.state.foundationModules} 
+            />
             <FoundationModulesList 
                 modules={this.state.foundationModules} 
             />
